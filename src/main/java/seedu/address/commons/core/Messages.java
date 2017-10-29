@@ -15,6 +15,7 @@ public class Messages {
     public static final String PROPERTY_EXISTS = "There already exists a property with the short name %1$s.";
     public static final String PROPERTY_NOT_FOUND = "Property with the short name %1$s has not been defined.";
     public static final String[] AUTOCOMPLETE_FIELD = {"addE", "add", "deleteE", "delete", "list", "listE", "edit",
-                                                    "editE", "help", "undo", "redo", "exit", "clear", "config"};
+        "editE", "help", "undo", "redo", "exit", "clear", "config"};
+
 }
 
