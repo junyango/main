@@ -5,6 +5,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ public class Person implements ReadOnlyPerson {
     private ObjectProperty<Phone> phone;
     private ObjectProperty<Email> email;
     private ObjectProperty<Address> address;
+    private ObjectProperty<Avatar> avatar;
     private ObjectProperty<UniquePropertyMap> properties;
     private ObjectProperty<UniqueTagList> tags;
 
@@ -43,6 +45,7 @@ public class Person implements ReadOnlyPerson {
         this.phone = new SimpleObjectProperty<>(phone);
         this.email = new SimpleObjectProperty<>(email);
         this.address = new SimpleObjectProperty<>(address);
+        this.avatar = new SimpleObjectProperty<>();
 
         Set<Property> properties = new HashSet<>();
         properties.add(name);
@@ -79,6 +82,7 @@ public class Person implements ReadOnlyPerson {
             System.err.println("This should never happen.");
         }
 
+        this.avatar = new SimpleObjectProperty<>();
         // protect internal tags from changes in the arg list
         this.tags = new SimpleObjectProperty<>(new UniqueTagList(tags));
     }
@@ -94,6 +98,10 @@ public class Person implements ReadOnlyPerson {
             // TODO: Better error handling
             e.printStackTrace();
             System.err.println("This should never happen.");
+        }
+
+        if (source.getAvatar() != null) {
+            this.setAvatar(source.getAvatar());
         }
     }
 
@@ -161,6 +169,22 @@ public class Person implements ReadOnlyPerson {
         return address.get();
     }
 
+    //@@author yunpengn
+    @Override
+    public ObjectProperty<Avatar> avatarProperty() {
+        return avatar;
+    }
+
+    @Override
+    public Avatar getAvatar() {
+        return avatar.get();
+    }
+
+    public void setAvatar(Avatar avatar) {
+        requireNonNull(avatar);
+        this.avatar.set(avatar);
+    }
+
     @Override
     public ObjectProperty<UniquePropertyMap> properties() {
         return properties;
@@ -174,6 +198,12 @@ public class Person implements ReadOnlyPerson {
     public Set<Property> getProperties() {
         return Collections.unmodifiableSet(properties.get().toSet());
     }
+
+    @Override
+    public List<Property> getSortedProperties() {
+        return Collections.unmodifiableList(properties().get().toSortedList());
+    }
+
 
     /**
      * Replaces this person's properties with the properties in the argument tag set.
@@ -193,6 +223,7 @@ public class Person implements ReadOnlyPerson {
     public void setProperty(Property toSet) {
         properties.get().addOrUpdate(toSet);
     }
+    //@@author
 
     /**
      * Returns an immutable tag set, which throws {@code UnsupportedOperationException}
@@ -202,6 +233,22 @@ public class Person implements ReadOnlyPerson {
     public Set<Tag> getTags() {
         return Collections.unmodifiableSet(tags.get().toSet());
     }
+
+    //@@author dennaloh
+    /**
+     * Returns the set of tags joined into a string
+     * @return
+     */
+    public String joinTagsToString() {
+        Set<Tag> tags = getTags();
+        StringBuilder sb = new StringBuilder();
+        for (Tag t : tags) {
+            sb.append(t.tagName);
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
+    //@@author
 
     public ObjectProperty<UniqueTagList> tagProperty() {
         return tags;

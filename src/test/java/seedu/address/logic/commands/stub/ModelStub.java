@@ -9,10 +9,11 @@ import javafx.collections.ObservableList;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.event.ReadOnlyEvent;
+import seedu.address.model.event.exceptions.DuplicateEventException;
+import seedu.address.model.event.exceptions.EventNotFoundException;
+import seedu.address.model.person.Avatar;
 import seedu.address.model.person.ReadOnlyPerson;
-import seedu.address.model.person.exceptions.DuplicateEventException;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
-import seedu.address.model.person.exceptions.EventNotFoundException;
 import seedu.address.model.person.exceptions.PersonNotFoundException;
 import seedu.address.model.property.exceptions.DuplicatePropertyException;
 import seedu.address.model.tag.Tag;
@@ -36,6 +37,18 @@ public class ModelStub implements Model {
         fail("This method should not be called.");
     }
 
+    //@@author dennaloh
+
+    @Override
+    public boolean haveDuplicate(String name, ObservableList<ReadOnlyPerson> list) {
+        return false;
+    }
+
+    @Override
+    public void addData(ReadOnlyAddressBook newData) {
+        fail("This method should not be called.");
+    }
+
     @Override
     public void resetData(ReadOnlyAddressBook newData) {
         fail("This method should not be called.");
@@ -55,6 +68,11 @@ public class ModelStub implements Model {
 
     @Override
     public void deletePerson(ReadOnlyPerson target) throws PersonNotFoundException {
+        fail("This method should not be called.");
+    }
+
+    @Override
+    public void setPersonAvatar(ReadOnlyPerson target, Avatar avatar) {
         fail("This method should not be called.");
     }
 

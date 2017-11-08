@@ -9,6 +9,7 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.tag.Tag;
 
+//@@author yunpengn
 /**
  * Changes the color of an existing tag.
  */
@@ -25,6 +26,7 @@ public class ChangeTagColorCommand extends ConfigCommand {
         super(TAG_COLOR, configValue);
 
         try {
+            /* Two tags are equal as long as their tagNames are the same. */
             tag = new Tag(tagName);
         } catch (IllegalValueException e) {
             throw new ParseException(MESSAGE_TAG_CONSTRAINTS);

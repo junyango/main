@@ -1,11 +1,12 @@
 package seedu.address.logic.commands.event;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE_TIME;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.util.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.util.CliSyntax.PREFIX_DATE_TIME;
+import static seedu.address.logic.parser.util.CliSyntax.PREFIX_NAME;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_EVENTS;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,11 +18,15 @@ import seedu.address.logic.commands.UndoableCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.event.Event;
 import seedu.address.model.event.ReadOnlyEvent;
-import seedu.address.model.person.exceptions.DuplicateEventException;
-import seedu.address.model.person.exceptions.EventNotFoundException;
+import seedu.address.model.event.exceptions.DuplicateEventException;
+import seedu.address.model.event.exceptions.EventNotFoundException;
 import seedu.address.model.property.Address;
 import seedu.address.model.property.DateTime;
 import seedu.address.model.property.Name;
+import seedu.address.model.reminder.Reminder;
+import seedu.address.model.reminder.exceptions.DuplicateReminderException;
+
+//@@author junyango
 
 /**
  * Edits the details of an existing person in the address book.
@@ -73,11 +78,15 @@ public class EditEventCommand extends UndoableCommand {
         Event editedEvent = createEditedEvent(eventToEdit, editEventDescriptor);
 
         try {
+            Reminder r = new Reminder(editedEvent, "Reminder: You have an event!");
+            editedEvent.addReminder(r);
             model.updateEvent(eventToEdit, editedEvent);
         } catch (DuplicateEventException dee) {
             throw new CommandException(MESSAGE_DUPLICATE_EVENT);
         } catch (EventNotFoundException enfe) {
             throw new AssertionError("The target event cannot be missing");
+        } catch (DuplicateReminderException dre) {
+            throw new AssertionError("Duplicate reminders found");
         }
         model.updateFilteredEventsList(PREDICATE_SHOW_ALL_EVENTS);
         return new CommandResult(String.format(MESSAGE_EDIT_EVENT_SUCCESS, editedEvent));
@@ -93,9 +102,10 @@ public class EditEventCommand extends UndoableCommand {
 
         Name updatedName = editEventDescriptor.getName().orElse(eventToEdit.getName());
         DateTime updatedTime = editEventDescriptor.getTime().orElse(eventToEdit.getTime());
-        Address updatedVenue = editEventDescriptor.getVenue().orElse(eventToEdit.getVenue());
+        Address updatedAddress = editEventDescriptor.getAddress().orElse(eventToEdit.getAddress());
+        ArrayList<Reminder> reminders = new ArrayList<Reminder>();
 
-        return new Event(updatedName, updatedTime, updatedVenue);
+        return new Event(updatedName, updatedTime, updatedAddress, reminders);
     }
 
     @Override
@@ -123,21 +133,21 @@ public class EditEventCommand extends UndoableCommand {
     public static class EditEventDescriptor {
         private Name name;
         private DateTime time;
-        private Address venue;
+        private Address address;
 
         public EditEventDescriptor() {}
 
         public EditEventDescriptor(EditEventDescriptor toCopy) {
             this.name = toCopy.name;
             this.time = toCopy.time;
-            this.venue = toCopy.venue;
+            this.address = toCopy.address;
         }
 
         /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(this.name, this.time, this.venue);
+            return CollectionUtil.isAnyNonNull(this.name, this.time, this.address);
         }
 
         public void setName(Name name) {
@@ -156,12 +166,12 @@ public class EditEventCommand extends UndoableCommand {
             return Optional.ofNullable(time);
         }
 
-        public void setVenue(Address venue) {
-            this.venue = venue;
+        public void setAddress(Address address) {
+            this.address = address;
         }
 
-        public Optional<Address> getVenue() {
-            return Optional.ofNullable(venue);
+        public Optional<Address> getAddress() {
+            return Optional.ofNullable(address);
         }
 
         @Override
@@ -181,7 +191,7 @@ public class EditEventCommand extends UndoableCommand {
 
             return getName().equals(e.getName())
                     && getTime().equals(e.getTime())
-                    && getVenue().equals(e.getVenue());
+                    && getAddress().equals(e.getAddress());
         }
     }
 }

@@ -1,6 +1,7 @@
 package seedu.address.model.tag;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_COLOR;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
@@ -11,6 +12,7 @@ import org.junit.rules.ExpectedException;
 
 import seedu.address.model.tag.exceptions.TagNotFoundException;
 
+//@@author yunpengn
 public class TagColorManagerTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -36,6 +38,6 @@ public class TagColorManagerTest {
     public void setTagColor_randomColor_checkCorrectness() throws Exception {
         Tag tag = new Tag(VALID_TAG_FRIEND);
         TagColorManager.setColor(tag);
-        assertEquals(6, TagColorManager.getColor(tag).length());
+        assertTrue(TagColorManager.getColor(tag).matches("#[A-Fa-f0-9]{6}"));
     }
 }

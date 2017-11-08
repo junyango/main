@@ -5,10 +5,11 @@ import java.util.regex.PatternSyntaxException;
 
 import javafx.collections.ObservableList;
 import seedu.address.model.event.ReadOnlyEvent;
+import seedu.address.model.event.exceptions.DuplicateEventException;
+import seedu.address.model.event.exceptions.EventNotFoundException;
+import seedu.address.model.person.Avatar;
 import seedu.address.model.person.ReadOnlyPerson;
-import seedu.address.model.person.exceptions.DuplicateEventException;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
-import seedu.address.model.person.exceptions.EventNotFoundException;
 import seedu.address.model.person.exceptions.PersonNotFoundException;
 import seedu.address.model.property.exceptions.DuplicatePropertyException;
 import seedu.address.model.tag.Tag;
@@ -21,6 +22,12 @@ public interface Model {
     Predicate<ReadOnlyPerson> PREDICATE_SHOW_ALL_PERSONS = unused -> true;
     Predicate<ReadOnlyEvent> PREDICATE_SHOW_ALL_EVENTS = unused -> true;
 
+
+    //@@author low5545
+    /** Adds extra data to the existing model */
+    void addData(ReadOnlyAddressBook newData);
+    //@@author
+
     /** Clears existing backing model and replaces with the provided new data. */
     void resetData(ReadOnlyAddressBook newData);
 
@@ -29,9 +36,11 @@ public interface Model {
 
     //=========== Model support for property component =============================================================
 
+    //@@author yunpengn
     /** Adds a new customize property */
     void addProperty(String shortName, String fullName, String message, String regex)
             throws DuplicatePropertyException, PatternSyntaxException;
+    //@@author
 
     //=========== Model support for contact component =============================================================
 
@@ -45,6 +54,9 @@ public interface Model {
     /** Deletes the given person. */
     void deletePerson(ReadOnlyPerson target) throws PersonNotFoundException;
 
+    /** Adds or updates the avatar of the selected person. */
+    void setPersonAvatar(ReadOnlyPerson target, Avatar avatar);
+
     //=========== Model support for tag component =============================================================
 
     /** Removes the specific tag (from all persons with that tag) */
@@ -53,9 +65,15 @@ public interface Model {
     /** Checks whether there exists a tag (with the same tagName) */
     boolean hasTag(Tag tag);
 
+    //@@author yunpengn
     /** Changes the color of an existing tag (through TagColorManager) */
     void setTagColor(Tag tag, String color);
 
+    //@@author
+
+
+
+    //@@author junyango
     //=========== Model support for activity component =============================================================
 
     /** Adds an event */
@@ -64,16 +82,25 @@ public interface Model {
     /** Updates the given event */
     void updateEvent(ReadOnlyEvent target, ReadOnlyEvent editedEvent)
             throws DuplicateEventException, EventNotFoundException;
-
     /** Deletes the given event */
     void deleteEvent(ReadOnlyEvent target) throws EventNotFoundException;
 
+
+
+    //@@author
+
+    //@@author
+
     //=========== Filtered Person/Activity List support =============================================================
+
+    //@@author dennaloh
+    /** Iterates through person list and checks for duplicates */
+    boolean haveDuplicate (String name, ObservableList<ReadOnlyPerson> list);
 
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<ReadOnlyPerson> getFilteredPersonList();
 
-    /** Returns an unmodifiable view of the filtered person list */
+    /** Returns an unmodifiable view of the filtered event list */
     ObservableList<ReadOnlyEvent> getFilteredEventList();
 
     /** Updates the filter of the filtered person list to filter by the given {@code predicate}. */
@@ -81,4 +108,5 @@ public interface Model {
 
     /** Updates the filter of the filtered event list to filter by the given {@code predicate}. */
     void updateFilteredEventsList(Predicate<ReadOnlyEvent> predicate);
+
 }

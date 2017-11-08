@@ -2,8 +2,10 @@ package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
+import static seedu.address.commons.util.StringUtil.containsWordIgnoreCase;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -17,11 +19,12 @@ import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.model.TagColorChangedEvent;
 import seedu.address.model.event.ReadOnlyEvent;
+import seedu.address.model.event.exceptions.DuplicateEventException;
+import seedu.address.model.event.exceptions.EventNotFoundException;
+import seedu.address.model.person.Avatar;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.ReadOnlyPerson;
-import seedu.address.model.person.exceptions.DuplicateEventException;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
-import seedu.address.model.person.exceptions.EventNotFoundException;
 import seedu.address.model.person.exceptions.PersonNotFoundException;
 import seedu.address.model.property.PropertyManager;
 import seedu.address.model.property.exceptions.DuplicatePropertyException;
@@ -57,6 +60,16 @@ public class ModelManager extends ComponentManager implements Model {
         this(new AddressBook(), new UserPrefs());
     }
 
+    //@@author low5545
+    @Override
+    public void addData(ReadOnlyAddressBook newData) {
+        addressBook.addData(newData);
+        addressBook.sortPersonList();
+        addressBook.sortEventList();
+        indicateAddressBookChanged();
+    }
+    //@@author
+
     @Override
     public void resetData(ReadOnlyAddressBook newData) {
         addressBook.resetData(newData);
@@ -68,18 +81,21 @@ public class ModelManager extends ComponentManager implements Model {
         return addressBook;
     }
 
-    /** Raises an event to indicate the model has changed */
+    /**
+     * Raises an event to indicate the model has changed
+     */
     private void indicateAddressBookChanged() {
         raise(new AddressBookChangedEvent(addressBook));
     }
 
+    //@@author yunpengn
     //=========== Model support for property component =============================================================
 
     /**
      * Adds a new customize property to {@code PropertyManager}.
      *
      * @throws DuplicatePropertyException if there already exists a property with the same {@code shortName}.
-     * @throws PatternSyntaxException if the given regular expression contains invalid syntax.
+     * @throws PatternSyntaxException     if the given regular expression contains invalid syntax.
      */
     @Override
     public void addProperty(String shortName, String fullName, String message, String regex)
@@ -87,6 +103,7 @@ public class ModelManager extends ComponentManager implements Model {
         PropertyManager.addNewProperty(shortName, fullName, message, regex);
         indicateAddressBookChanged();
     }
+    //@@author
 
     //=========== Model support for contact component =============================================================
 
@@ -102,8 +119,8 @@ public class ModelManager extends ComponentManager implements Model {
      * Replaces the given person {@code target} with {@code editedPerson}.
      *
      * @throws DuplicatePersonException if updating the person's details causes the person to be equivalent to
-     *      another existing person in the list.
-     * @throws PersonNotFoundException if {@code target} could not be found in the list.
+     *                                  another existing person in the list.
+     * @throws PersonNotFoundException  if {@code target} could not be found in the list.
      */
     @Override
     public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
@@ -121,6 +138,16 @@ public class ModelManager extends ComponentManager implements Model {
         indicateAddressBookChanged();
     }
 
+    //@@author yunpengn
+    @Override
+    public void setPersonAvatar(ReadOnlyPerson target, Avatar avatar) {
+        requireAllNonNull(target, avatar);
+        target.setAvatar(avatar);
+        indicateAddressBookChanged();
+    }
+    //@@author
+
+
     //=========== Model support for tag component =============================================================
 
     /**
@@ -132,7 +159,7 @@ public class ModelManager extends ComponentManager implements Model {
     @Override
     public void removeTag(Tag tag) throws DuplicatePersonException, PersonNotFoundException {
         // Checks whether each person has that specific tag.
-        for (ReadOnlyPerson target: addressBook.getPersonList()) {
+        for (ReadOnlyPerson target : addressBook.getPersonList()) {
             Person person = new Person(target);
             Set<Tag> updatedTags = new HashSet<>(person.getTags());
             updatedTags.remove(tag);
@@ -150,6 +177,7 @@ public class ModelManager extends ComponentManager implements Model {
         return addressBook.getTagList().contains(tag);
     }
 
+    //@@author yunpengn
     /**
      * Changes the displayed color of an existing tag (through {@link TagColorManager}).
      */
@@ -158,7 +186,9 @@ public class ModelManager extends ComponentManager implements Model {
         indicateAddressBookChanged();
         raise(new TagColorChangedEvent(tag, color));
     }
+    //@@author
 
+    //@@author junyango
     //=========== Model support for activity component =============================================================
 
     @Override
@@ -185,7 +215,32 @@ public class ModelManager extends ComponentManager implements Model {
         indicateAddressBookChanged();
     }
 
+    //@@author
+
+    //@@author
+
     //=========== Filtered Person List Accessors =============================================================
+
+    //@@author dennaloh
+    /**
+     * Iterates through person list and checks for duplicates
+     *
+     */
+    public boolean haveDuplicate (String name, ObservableList<ReadOnlyPerson> list) {
+        int count = 0;
+        Iterator<ReadOnlyPerson> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            ReadOnlyPerson person = iterator.next();
+            if (containsWordIgnoreCase(person.getName().getValue(), name)) {
+                count++;
+            }
+        }
+        if (count > 1) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Returns an unmodifiable view of the list of {@code ReadOnlyPerson} backed by the internal list of
      * {@code addressBook}
@@ -197,6 +252,7 @@ public class ModelManager extends ComponentManager implements Model {
 
     /**
      * Updates the filter of the filtered person list to filter by the given {@code predicate}.
+     *
      * @throws NullPointerException if {@code predicate} is null.
      */
     @Override
@@ -205,6 +261,7 @@ public class ModelManager extends ComponentManager implements Model {
         filteredPersons.setPredicate(predicate);
     }
 
+    //@@author junyango
     //=========== Filtered Activity List Accessors =============================================================
 
     @Override
@@ -214,6 +271,7 @@ public class ModelManager extends ComponentManager implements Model {
 
     /**
      * Updates the filter of the filtered event list to filter by the given {@code predicate}.
+     *
      * @throws NullPointerException if {@code predicate} is null.
      */
     @Override
@@ -221,6 +279,7 @@ public class ModelManager extends ComponentManager implements Model {
         requireNonNull(predicate);
         filteredEvents.setPredicate(predicate);
     }
+    //@@author
 
     @Override
     public boolean equals(Object obj) {

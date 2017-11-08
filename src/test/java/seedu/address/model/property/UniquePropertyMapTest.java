@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.BeforeClass;
@@ -15,6 +16,7 @@ import org.junit.rules.ExpectedException;
 import seedu.address.model.property.exceptions.DuplicatePropertyException;
 import seedu.address.model.property.exceptions.PropertyNotFoundException;
 
+//@@author yunpengn
 public class UniquePropertyMapTest {
     private static Set<Property> mySet;
     private static Property newProperty;
@@ -122,6 +124,14 @@ public class UniquePropertyMapTest {
     public void toSet_checkCorrectness() throws Exception {
         UniquePropertyMap propertyMap = createSampleMap();
         assertEquals(mySet, propertyMap.toSet());
+    }
+
+    @Test
+    public void toSortedList_checkCorrectness() throws Exception {
+        UniquePropertyMap propertyMap = createSampleMap();
+        List list = propertyMap.toSortedList();
+        assertEquals(new Property("a", "some address"), list.get(0));
+        assertEquals(new Property("p", "12345678"), list.get(1));
     }
 
     @Test

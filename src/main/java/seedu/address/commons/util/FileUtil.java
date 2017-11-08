@@ -14,12 +14,18 @@ import java.util.regex.Pattern;
 public class FileUtil {
 
     private static final String CHARSET = "UTF-8";
+
+    //@@author low5545
     private static final Pattern XML_FILE_FORMAT = Pattern.compile(".*\\.xml$");
     private static final Pattern UNIX_NAME_SEPARATOR_FORMAT = Pattern.compile(".*/.*");
     private static final Pattern WINDOWS_NAME_SEPARATOR_FORMAT = Pattern.compile(".*\\\\.*");
     private static final Pattern INVALID_NAME_CHARACTERS_FORMAT = Pattern.compile(".*[?!%*+:|\"<>].*");
+    private static final Pattern MISSING_FILE_NAME_FORMAT = Pattern.compile("(^\\.\\w+)"
+                                                                            + "|(.*/\\.\\w+$)"
+                                                                            + "|(.*\\\\\\.\\w+$)");
     private static final Pattern CONSECUTIVE_NAME_SEPARATOR_FORMAT = Pattern.compile("(.*//.*)|(.*\\\\\\\\.*)");
-    private static final Pattern CONSECUTIVE_EXTENSION_SEPARATOR_FORMAT = Pattern.compile(".*\\.\\..*");
+    private static final Pattern CONSECUTIVE_EXTENSION_SEPARATOR_FORMAT = Pattern.compile(".*\\.\\.\\w+");
+    //@@author
 
     public static boolean isFileExists(File file) {
         return file.exists() && file.isFile();
@@ -98,6 +104,7 @@ public class FileUtil {
         return pathWithForwardSlash.replace("/", File.separator);
     }
 
+    //@@author low5545
     /**
      * Checks whether the file specified in the {@code filePath} is a valid XML file
      */
@@ -111,15 +118,14 @@ public class FileUtil {
     public static boolean hasInvalidNameSeparators(String filePath) {
         Matcher unixMatcher = UNIX_NAME_SEPARATOR_FORMAT.matcher(filePath);
         Matcher windowsMatcher = WINDOWS_NAME_SEPARATOR_FORMAT.matcher(filePath);
-
         return unixMatcher.matches() && File.separator.equals("\\")
                 || windowsMatcher.matches() && File.separator.equals("/");
     }
 
     /**
-     * Checks whether the non-existent file name and folder names in {@filePath} are valid
+     * Checks whether the file name and non-existent folder names in {@code filePath} are valid
      */
-    public static boolean hasInvalidNonExistentNames(String filePath) {
+    public static boolean hasInvalidNames(String filePath) {
         File file = new File(filePath);
         // taking account into relative paths with non-existent parent folders
         if (!file.isAbsolute()) {
@@ -137,7 +143,14 @@ public class FileUtil {
     }
 
     /**
-     * Checks whether the {@filePath} contain any consecutive name separators (OS-dependent)
+     * Checks whether the {@code filePath} has a missing file name.
+     */
+    public static boolean hasMissingFileName(String filePath) {
+        return MISSING_FILE_NAME_FORMAT.matcher(filePath).matches();
+    }
+
+    /**
+     * Checks whether the {@code filePath} contain any consecutive name separators (OS-dependent)
      *
      * {@link #hasInvalidNameSeparators(String)} should be checked prior this method
      */
@@ -146,7 +159,7 @@ public class FileUtil {
     }
 
     /**
-     * Checks whether the {@filePath} contain any consecutive extension separators (.)
+     * Checks whether the {@code filePath} contain any consecutive extension separators (.)
      *
      */
     public static boolean hasConsecutiveExtensionSeparators(String filePath) {

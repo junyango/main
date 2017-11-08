@@ -13,11 +13,10 @@ import org.fxmisc.easybind.EasyBind;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.CollectionUtil;
-import seedu.address.model.person.exceptions.DuplicateEventException;
-import seedu.address.model.person.exceptions.EventNotFoundException;
-import seedu.address.model.person.exceptions.PersonNotFoundException;
+import seedu.address.model.event.exceptions.DuplicateEventException;
+import seedu.address.model.event.exceptions.EventNotFoundException;
 
-
+//@@author junyango
 /**
  * A list of events that enforces uniqueness between its elements and does not allow nulls.
  *
@@ -32,7 +31,7 @@ public class UniqueEventList implements Iterable<Event> {
     private final ObservableList<ReadOnlyEvent> mappedList = EasyBind.map(internalList, (event) -> event);
 
     /**
-     * Returns true if the list contains an equivalent person as the given argument.
+     * Returns true if the list contains an equivalent event as the given argument.
      */
     public boolean contains(ReadOnlyEvent toCheck) {
         requireNonNull(toCheck);
@@ -42,7 +41,7 @@ public class UniqueEventList implements Iterable<Event> {
     /**
      * Adds an event to the list.
      *
-     * @throws DuplicateEventException if the person to add is a duplicate of an existing event in the list.
+     * @throws DuplicateEventException if the event to add is a duplicate of an existing event in the list.
      */
     public void add(ReadOnlyEvent toAdd) throws DuplicateEventException {
         requireNonNull(toAdd);
@@ -63,10 +62,10 @@ public class UniqueEventList implements Iterable<Event> {
     }
 
     /**
-     * Replaces the person {@code target} in the list with {@code editedEvent}.
+     * Replaces the event {@code target} in the list with {@code editedEvent}.
      *
-     * @throws DuplicateEventException if the replacement is equivalent to another existing person in the list.
-     * @throws PersonNotFoundException  if {@code target} could not be found in the list.
+     * @throws DuplicateEventException if the replacement is equivalent to another existing event in the list.
+     * @throws EventNotFoundException  if {@code target} could not be found in the list.
      */
     public void setEvent(ReadOnlyEvent target, ReadOnlyEvent editedEvent) throws DuplicateEventException,
             EventNotFoundException {
@@ -75,7 +74,7 @@ public class UniqueEventList implements Iterable<Event> {
 
         int index = internalList.indexOf(target);
         if (index == -1) {
-            throw new EventNotFoundException();
+            throw new EventNotFoundException("Event not found");
         }
 
         if (!target.equals(editedEvent) && internalList.contains(editedEvent)) {
@@ -87,19 +86,34 @@ public class UniqueEventList implements Iterable<Event> {
 
 
     /**
-     * Removes the equivalent person from the list.
+     * Removes the equivalent event from the list.
      *
-     * @throws PersonNotFoundException if no such person could be found in the list.
+     * @throws EventNotFoundException if no such event could be found in the list.
      */
     public boolean remove(ReadOnlyEvent toRemove) throws EventNotFoundException {
         requireNonNull(toRemove);
         final boolean eventFoundAndDeleted = internalList.remove(toRemove);
         if (!eventFoundAndDeleted) {
-            throw new EventNotFoundException();
+            throw new EventNotFoundException("Event not found");
         }
         return eventFoundAndDeleted;
     }
 
+    //@@author low5545
+    /**
+     * Adds all events in the argument events list to this list.
+     */
+    public void addEvents(List<? extends ReadOnlyEvent> events) {
+        for (final ReadOnlyEvent event : events) {
+            try {
+                this.add(new Event(event));
+            } catch (DuplicateEventException e) {
+                // skip event if it exists
+            }
+        }
+    }
+
+    //@@author junyango
     public void setEvents(UniqueEventList replacement) {
         this.internalList.setAll(replacement.internalList);
     }

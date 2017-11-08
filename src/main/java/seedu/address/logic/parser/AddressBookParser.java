@@ -20,20 +20,26 @@ import seedu.address.logic.commands.event.DeleteEventCommand;
 import seedu.address.logic.commands.event.EditEventCommand;
 import seedu.address.logic.commands.event.ListEventCommand;
 import seedu.address.logic.commands.imports.ImportCommand;
+import seedu.address.logic.commands.person.AddAvatarCommand;
 import seedu.address.logic.commands.person.AddCommand;
 import seedu.address.logic.commands.person.DeleteCommand;
 import seedu.address.logic.commands.person.EditCommand;
+import seedu.address.logic.commands.person.EmailCommand;
 import seedu.address.logic.commands.person.FindCommand;
+import seedu.address.logic.commands.person.FindTagCommand;
 import seedu.address.logic.commands.person.ListCommand;
 import seedu.address.logic.commands.person.SelectCommand;
 import seedu.address.logic.parser.event.AddEventParser;
 import seedu.address.logic.parser.event.DeleteEventParser;
 import seedu.address.logic.parser.event.EditEventParser;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.logic.parser.person.AddAvatarCommandParser;
 import seedu.address.logic.parser.person.AddCommandParser;
 import seedu.address.logic.parser.person.DeleteCommandParser;
 import seedu.address.logic.parser.person.EditCommandParser;
+import seedu.address.logic.parser.person.EmailCommandParser;
 import seedu.address.logic.parser.person.FindCommandParser;
+import seedu.address.logic.parser.person.FindTagCommandParser;
 import seedu.address.logic.parser.person.SelectCommandParser;
 
 /**
@@ -67,17 +73,27 @@ public class AddressBookParser {
         case AddCommand.COMMAND_ALIAS:
             return new AddCommandParser().parse(arguments);
 
-        case AddEventCommand.COMMAND_WORD:
-        case AddEventCommand.COMMAND_ALIAS:
-            return new AddEventParser().parse(arguments);
-
         case EditCommand.COMMAND_WORD:
         case EditCommand.COMMAND_ALIAS:
             return new EditCommandParser().parse(arguments);
 
+        //@@author junyango
+        case AddEventCommand.COMMAND_WORD:
+        case AddEventCommand.COMMAND_ALIAS:
+            return new AddEventParser().parse(arguments);
+
         case EditEventCommand.COMMAND_WORD:
         case EditEventCommand.COMMAND_ALIAS:
             return new EditEventParser().parse(arguments);
+
+        case DeleteEventCommand.COMMAND_WORD:
+        case DeleteEventCommand.COMMAND_ALIAS:
+            return new DeleteEventParser().parse(arguments);
+
+        case ListEventCommand.COMMAND_WORD:
+        case ListEventCommand.COMMAND_ALIAS:
+            return new ListEventCommand();
+        //@@author
 
         case SelectCommand.COMMAND_WORD:
         case SelectCommand.COMMAND_ALIAS:
@@ -86,10 +102,6 @@ public class AddressBookParser {
         case DeleteCommand.COMMAND_WORD:
         case DeleteCommand.COMMAND_ALIAS:
             return new DeleteCommandParser().parse(arguments);
-
-        case DeleteEventCommand.COMMAND_WORD:
-        case DeleteEventCommand.COMMAND_ALIAS:
-            return new DeleteEventParser().parse(arguments);
 
         case ClearCommand.COMMAND_WORD:
         case ClearCommand.COMMAND_ALIAS:
@@ -102,10 +114,6 @@ public class AddressBookParser {
         case ListCommand.COMMAND_WORD:
         case ListCommand.COMMAND_ALIAS:
             return new ListCommand();
-
-        case ListEventCommand.COMMAND_WORD:
-        case ListEventCommand.COMMAND_ALIAS:
-            return new ListEventCommand();
 
         case HistoryCommand.COMMAND_WORD:
         case HistoryCommand.COMMAND_ALIAS:
@@ -123,6 +131,10 @@ public class AddressBookParser {
         case ExportCommand.COMMAND_ALIAS:
             return new ExportCommandParser().parse(arguments);
 
+        case AddAvatarCommand.COMMAND_WORD:
+        case AddAvatarCommand.COMMAND_ALIAS:
+            return new AddAvatarCommandParser().parse(arguments);
+
         case ExitCommand.COMMAND_WORD:
         case ExitCommand.COMMAND_ALIAS:
             return new ExitCommand();
@@ -138,6 +150,16 @@ public class AddressBookParser {
         case RedoCommand.COMMAND_WORD:
         case RedoCommand.COMMAND_ALIAS:
             return new RedoCommand();
+
+        //@@author dennaloh
+        case FindTagCommand.COMMAND_WORD:
+        case FindTagCommand.COMMAND_ALIAS:
+            return new FindTagCommandParser().parse(arguments);
+
+        case EmailCommand.COMMAND_WORD:
+        case EmailCommand.COMMAND_ALIAS:
+            return new EmailCommandParser().parse(arguments);
+        //@@author
 
         default:
             throw new ParseException(MESSAGE_UNKNOWN_COMMAND);

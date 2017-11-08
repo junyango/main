@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.property.exceptions.PropertyNotFoundException;
 
+//@@author yunpengn
 /**
  * A generic class that represents a property of a person. All properties of a person (including name, email, phone
  * and address) should inherit from this class.
@@ -43,6 +44,8 @@ public class Property {
 
     /**
      * Returns if a given string is a valid value for this property.
+     *
+     * Notice: Do NOT call this method for {@link DateTime} property. Use {@code DateTime.isValidTime()} instead.
      */
     public boolean isValid(String test) {
         return test.matches(PropertyManager.getPropertyValidationRegex(shortName));

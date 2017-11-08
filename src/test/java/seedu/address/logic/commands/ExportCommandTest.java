@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import seedu.address.commons.exceptions.DataConversionException;
+import seedu.address.commons.exceptions.InvalidFilePathException;
 import seedu.address.logic.CommandHistory;
 import seedu.address.logic.UndoRedoStack;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -29,6 +30,7 @@ import seedu.address.storage.StorageManager;
 import seedu.address.storage.UserPrefsStorage;
 import seedu.address.storage.XmlAddressBookStorage;
 
+//@@author low5545
 /**
  * Contains integration tests (interaction with the Model and Storage) and unit tests for {@code ExportCommand}.
  */
@@ -69,6 +71,15 @@ public class ExportCommandTest {
     @Test
     public void execute_invalidName_throwsCommandException() {
         String filePath = getTempFilePath("invalidExportC*.xml");
+        ExportCommand command = prepareCommand(filePath);
+        String expectedMessage = ExportCommand.MESSAGE_INVALID_NAME;
+
+        assertCommandFailure(command, expectedMessage, filePath);
+    }
+
+    @Test
+    public void execute_missingFileName_throwsCommandException() {
+        String filePath = getTempFilePath(".xml");
         ExportCommand command = prepareCommand(filePath);
         String expectedMessage = ExportCommand.MESSAGE_INVALID_NAME;
 
@@ -128,7 +139,7 @@ public class ExportCommandTest {
      * Helper method to provide temporary file paths
      */
     private String getTempFilePath(String fileName) {
-        return testFolder.getRoot().getPath() + fileName;
+        return testFolder.getRoot().getPath() + File.separator + fileName;
     }
 
     /**
@@ -151,7 +162,7 @@ public class ExportCommandTest {
             CommandResult result = command.execute();
             assertEquals(expectedMessage, result.feedbackToUser);
             assertEquals(model.getAddressBook(), new AddressBook(storage.readAddressBook(filePath).get()));
-        } catch (CommandException | DataConversionException | IOException e) {
+        } catch (CommandException | DataConversionException | IOException | InvalidFilePathException e) {
             throw new AssertionError("Execution of command should not fail.", e);
         }
     }

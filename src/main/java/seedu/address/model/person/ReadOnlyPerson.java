@@ -1,5 +1,6 @@
 package seedu.address.model.person;
 
+import java.util.List;
 import java.util.Set;
 
 import javafx.beans.property.ObjectProperty;
@@ -26,10 +27,16 @@ public interface ReadOnlyPerson {
     Email getEmail();
     ObjectProperty<Address> addressProperty();
     Address getAddress();
+    ObjectProperty<Avatar> avatarProperty();
+    Avatar getAvatar();
+    void setAvatar(Avatar avatar);
     ObjectProperty<UniquePropertyMap> properties();
     Set<Property> getProperties();
+    List<Property> getSortedProperties();
     ObjectProperty<UniqueTagList> tagProperty();
     Set<Tag> getTags();
+
+    String joinTagsToString();
 
     /**
      * Returns true if both have the same state. (interfaces cannot override .equals)

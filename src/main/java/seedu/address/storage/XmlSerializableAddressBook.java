@@ -68,12 +68,13 @@ public class XmlSerializableAddressBook implements ReadOnlyAddressBook {
         return FXCollections.unmodifiableObservableList(persons);
     }
 
+    //@@author junyango
     @Override
     public ObservableList<ReadOnlyEvent> getEventList() {
         final ObservableList<ReadOnlyEvent> events = this.events.stream().map(p -> {
             try {
                 return p.toModelType();
-            } catch (IllegalValueException | PropertyNotFoundException e) {
+            } catch (IllegalValueException | PropertyNotFoundException | DuplicatePropertyException e) {
                 e.printStackTrace();
                 //TODO: better error handling
                 return null;
@@ -96,6 +97,7 @@ public class XmlSerializableAddressBook implements ReadOnlyAddressBook {
         return FXCollections.unmodifiableObservableList(tags);
     }
 
+    //@@author yunpengn
     /**
      * Initialize the {@link PropertyManager} by clearing all existing properties and load information about new
      * properties from the storage file.
@@ -104,4 +106,5 @@ public class XmlSerializableAddressBook implements ReadOnlyAddressBook {
         PropertyManager.clearAllProperties();
         properties.initializeProperties();
     }
+    //@@author
 }
