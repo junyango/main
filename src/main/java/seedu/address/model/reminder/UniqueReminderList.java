@@ -11,8 +11,6 @@ import org.fxmisc.easybind.EasyBind;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.CollectionUtil;
-import seedu.address.model.reminder.exceptions.DuplicateReminderException;
-
 
 
 /**
@@ -33,7 +31,7 @@ public class UniqueReminderList implements Iterable<Reminder> {
     /**
      * Constructs empty UniqueReminderList
      */
-    public UniqueReminderList(List<? extends ReadOnlyReminder> reminders) throws DuplicateReminderException {
+    public UniqueReminderList(List<? extends ReadOnlyReminder> reminders) {
         for (ReadOnlyReminder reminder: reminders) {
             add(reminder);
         }
@@ -52,13 +50,10 @@ public class UniqueReminderList implements Iterable<Reminder> {
     /**
      * Adds an reminder to the list.
      *
-     * @throws DuplicateReminderException if the reminder to add is a duplicate of an existing reminder in the list.
      */
-    public void add(ReadOnlyReminder toAdd) throws DuplicateReminderException {
+    public void add(ReadOnlyReminder toAdd) {
         requireNonNull(toAdd);
-        if (contains(toAdd)) {
-            throw new DuplicateReminderException();
-        }
+
         internalList.add(new Reminder(toAdd));
     }
 
@@ -75,7 +70,7 @@ public class UniqueReminderList implements Iterable<Reminder> {
         this.internalList.setAll(replacement.internalList);
     }
 
-    public void setReminders(List<? extends ReadOnlyReminder> reminders) throws DuplicateReminderException {
+    public void setReminders(List<? extends ReadOnlyReminder> reminders) {
         final UniqueReminderList replacement = new UniqueReminderList();
         for (final ReadOnlyReminder reminder : reminders) {
             replacement.add(new Reminder(reminder));

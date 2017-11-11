@@ -24,15 +24,4 @@ public interface ReadOnlyReminder {
                 && other.getEvent().equals(this.getEvent()) // state checks here onwards
                 && other.getMessage().equals(this.getMessage()));
     }
-
-    /**
-     * Formats the reminder as text, showing all contact details.
-     */
-    default String getAsText() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(" Message: ")
-                .append(getMessage());
-        return builder.toString();
-    }
-
 }

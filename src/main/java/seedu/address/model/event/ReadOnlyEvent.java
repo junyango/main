@@ -12,7 +12,6 @@ import seedu.address.model.property.UniquePropertyMap;
 import seedu.address.model.reminder.ReadOnlyReminder;
 import seedu.address.model.reminder.Reminder;
 import seedu.address.model.reminder.UniqueReminderList;
-import seedu.address.model.reminder.exceptions.DuplicateReminderException;
 
 //@@author junyango
 /**
@@ -32,7 +31,7 @@ public interface ReadOnlyEvent {
     Set<Property> getProperties();
     ObjectProperty<UniqueReminderList> reminderProperty();
     List<Reminder> getReminders();
-    void addReminder(ReadOnlyReminder r) throws DuplicateReminderException;
+    void addReminder(ReadOnlyReminder r);
 
     /**
      * Returns true if both have the same state. (interfaces cannot override .equals)

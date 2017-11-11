@@ -12,7 +12,6 @@ import seedu.address.model.event.Event;
 import seedu.address.model.event.ReadOnlyEvent;
 import seedu.address.model.event.exceptions.DuplicateEventException;
 import seedu.address.model.reminder.Reminder;
-import seedu.address.model.reminder.exceptions.DuplicateReminderException;
 
 //@@author junyango
 /**
@@ -45,11 +44,7 @@ public class AddEventCommand extends UndoableCommand {
 
         toAdd = new Event(event);
         Reminder r = new Reminder(toAdd, "Reminder : You have an event!");
-        try {
-            toAdd.addReminder(r);
-        } catch (DuplicateReminderException dre) {
-            System.err.println("This should never happen. A new event should have no existing reminder");
-        }
+        toAdd.addReminder(r);
     }
 
 

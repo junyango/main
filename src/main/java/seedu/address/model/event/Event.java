@@ -23,7 +23,6 @@ import seedu.address.model.property.exceptions.PropertyNotFoundException;
 import seedu.address.model.reminder.ReadOnlyReminder;
 import seedu.address.model.reminder.Reminder;
 import seedu.address.model.reminder.UniqueReminderList;
-import seedu.address.model.reminder.exceptions.DuplicateReminderException;
 
 //@@junyang junyango
 
@@ -63,16 +62,9 @@ public class Event implements ReadOnlyEvent {
             e.printStackTrace();
             System.err.println("This should never happen");
         }
-        try {
-            this.reminders = new SimpleObjectProperty<>(new UniqueReminderList(reminders));
-        } catch (DuplicateReminderException e) {
-            e.printStackTrace();
-            System.err.println("This should never happen");
-        }
+        this.reminders = new SimpleObjectProperty<>(new UniqueReminderList(reminders));
     }
-
-    public Event(Set<Property> properties, ArrayList<Reminder> reminders) throws DuplicateReminderException,
-            DuplicatePropertyException {
+    public Event(Set<Property> properties, ArrayList<Reminder> reminders) throws DuplicatePropertyException {
         requireAllNonNull(properties, reminders);
         this.properties = new SimpleObjectProperty<>();
         setProperties(properties);
@@ -97,7 +89,7 @@ public class Event implements ReadOnlyEvent {
         try {
             setProperties(source.getProperties());
             setReminders(source.getReminders());
-        } catch (DuplicatePropertyException | DuplicateReminderException e) {
+        } catch (DuplicatePropertyException e) {
             // TODO: Better error handling
             e.printStackTrace();
             System.err.println("This should never happen.");
@@ -160,7 +152,7 @@ public class Event implements ReadOnlyEvent {
      * if modification is attempted.
      */
     @Override
-    public void addReminder(ReadOnlyReminder r) throws DuplicateReminderException {
+    public void addReminder(ReadOnlyReminder r) {
         reminders.get().add(r);
     }
     @Override
@@ -171,7 +163,7 @@ public class Event implements ReadOnlyEvent {
     /**
      * Replaces this event's reminders with the reminders in the argument tag set.
      */
-    public void setReminders(List<? extends ReadOnlyReminder> replacement) throws DuplicateReminderException {
+    public void setReminders(List<? extends ReadOnlyReminder> replacement)  {
         reminders.set(new UniqueReminderList(replacement));
     }
 

@@ -16,7 +16,7 @@ import seedu.address.model.event.Event;
 public class Reminder implements ReadOnlyReminder {
     private ObjectProperty<Event> event;
     private ObjectProperty<String> message;
-    private ObjectProperty<String> name;
+
     /**
      * Every field must be present and not null.
      */
@@ -24,13 +24,6 @@ public class Reminder implements ReadOnlyReminder {
         requireAllNonNull(message, event);
         this.event = new SimpleObjectProperty<>(event);
         this.message = new SimpleObjectProperty<>(message);
-    }
-    //TODO: better error handling
-    public Reminder(String name, String message) {
-        requireAllNonNull(name, message);
-        this.name = new SimpleObjectProperty<>(name);
-        this.message = new SimpleObjectProperty<>(message);
-
     }
     /**
      * Creates a copy of the given ReadOnlyReminder.
@@ -73,11 +66,5 @@ public class Reminder implements ReadOnlyReminder {
         // use this method for custom fields hashing instead of implementing your own
         return Objects.hash(event, message);
     }
-
-    @Override
-    public String toString() {
-        return getAsText();
-    }
-
 }
 

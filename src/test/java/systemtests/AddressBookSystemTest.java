@@ -122,6 +122,14 @@ public abstract class AddressBookSystemTest {
     }
 
     /**
+     * Displays all events with any parts of their names matching {@code keyword} (case-insensitive).
+     */
+    protected void showEventsWithName(String keyword) {
+        executeCommand(FindCommand.COMMAND_WORD + " " + keyword);
+        assert getModel().getFilteredEventList().size() < getModel().getAddressBook().getEventList().size();
+    }
+
+    /**
      * Selects the person at {@code index} of the displayed list.
      */
     protected void selectPerson(Index index) {

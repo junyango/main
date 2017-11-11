@@ -46,6 +46,9 @@ public class TypicalEvents {
     public static final ReadOnlyEvent EV2 = new EventBuilder().withName(VALID_NAME_EVENT2)
             .withDateTime(VALID_DATE_EVENT2).withAddress(VALID_VENUE_EVENT2).build();
 
+    // A keyword that matches Mel
+    public static final String KEYWORD_MATCHING_MEL = "Mel";
+
 
     private TypicalEvents() {} // prevents instantiation
 
