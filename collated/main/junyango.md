@@ -82,6 +82,11 @@ public class AddEventCommand extends UndoableCommand {
         toAdd = new Event(event);
         Reminder r = new Reminder(toAdd, "Reminder : You have an event!");
         toAdd.addReminder(r);
+        try {
+            toAdd.addReminder(r);
+        } catch (DuplicateReminderException dre) {
+            System.err.println("This should never happen. A new event should have no existing reminder");
+        }
     }
 
 
