@@ -8,6 +8,7 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_EVENTS;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 import static seedu.address.testutil.TypicalEvents.EVENT1;
+import static seedu.address.testutil.TypicalEvents.EVENT2;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
@@ -22,12 +23,12 @@ import javafx.collections.ObservableList;
 import seedu.address.model.event.Event;
 import seedu.address.model.event.ReadOnlyEvent;
 import seedu.address.model.person.ReadOnlyPerson;
+import seedu.address.model.property.EventNameContainsKeywordsPredicate;
 import seedu.address.model.property.NameContainsKeywordsPredicate;
 import seedu.address.model.reminder.Reminder;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.tag.TagColorManager;
 import seedu.address.testutil.AddressBookBuilder;
-import seedu.address.testutil.TypicalEvents;
 import seedu.address.testutil.TypicalPersons;
 
 public class ModelManagerTest {
@@ -95,14 +96,16 @@ public class ModelManagerTest {
     public void sortEventList_successfullySortEvent() throws Exception {
         AddressBook addressBook = getTypicalAddressBook();
         UserPrefs userPrefs = new UserPrefs();
-        ModelManager modelManager = new ModelManager(addressBook, userPrefs);
+
         ModelManager modelManager1 = new ModelManager(addressBook, userPrefs);
-        modelManager.addEvent(TypicalEvents.EVENT2);
-        modelManager.addEvent(EVENT1);
+        modelManager1.addEvent(EVENT2);
         modelManager1.addEvent(EVENT1);
-        modelManager1.addEvent(TypicalEvents.EVENT2);
-        System.out.println(modelManager);
-        assertEquals(modelManager, modelManager1);
+
+        ModelManager modelManager2 = new ModelManager(addressBook, userPrefs);
+        modelManager2.addEvent(EVENT1);
+        modelManager2.addEvent(EVENT2);
+
+        assertEquals(modelManager1, modelManager2);
     }
 
     @Test
@@ -136,7 +139,7 @@ public class ModelManagerTest {
         ObservableList<ReadOnlyEvent> events = modelManager.getAddressBook().getEventList();
         int originalEventListSize = events.size();
         modelManager.addEvent(EVENT1);
-        modelManager.addEvent(TypicalEvents.EVENT2);
+        modelManager.addEvent(EVENT2);
         modelManager.deleteEvent(events.get(1));
         int newEventListSize = modelManager.getAddressBook().getEventList().size();
         assertEquals(1, newEventListSize - originalEventListSize);
@@ -182,6 +185,10 @@ public class ModelManagerTest {
         // different filteredList -> returns false
         String[] keywords = ALICE.getName().getValue().split("\\s+");
         modelManager.updateFilteredPersonList(new NameContainsKeywordsPredicate(Arrays.asList(keywords)));
+        assertFalse(modelManager.equals(new ModelManager(addressBook, userPrefs)));
+
+        String[] keywordsE = EVENT1.getName().getValue().split("\\s+");
+        modelManager.updateFilteredEventsList(new EventNameContainsKeywordsPredicate(Arrays.asList(keywordsE)));
         assertFalse(modelManager.equals(new ModelManager(addressBook, userPrefs)));
 
         // resets modelManager to initial state for upcoming tests

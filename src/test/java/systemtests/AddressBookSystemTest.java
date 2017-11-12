@@ -29,11 +29,14 @@ import guitests.guihandles.person.PersonListPanelHandle;
 import seedu.address.TestApp;
 import seedu.address.commons.core.EventsCenter;
 import seedu.address.commons.core.index.Index;
+import seedu.address.logic.commands.event.ListEventCommand;
 import seedu.address.logic.commands.person.FindCommand;
 import seedu.address.logic.commands.person.ListCommand;
 import seedu.address.logic.commands.person.SelectCommand;
 import seedu.address.model.Model;
 import seedu.address.ui.CommandBox;
+import systemtests.util.ClockRule;
+import systemtests.util.SystemTestSetupHelper;
 
 /**
  * A system test class for AddressBook, which provides access to handles of GUI components and helper methods
@@ -126,6 +129,14 @@ public abstract class AddressBookSystemTest {
     protected void selectPerson(Index index) {
         executeCommand(SelectCommand.COMMAND_WORD + " " + index.getOneBased());
         assert getPersonListPanel().getSelectedCardIndex() == index.getZeroBased();
+    }
+
+    /**
+     * Displays all persons in the address book.
+     */
+    protected void showAllEvents() {
+        executeCommand(ListEventCommand.COMMAND_WORD);
+        assert getModel().getAddressBook().getEventList().size() == getModel().getFilteredEventList().size();
     }
 
     /**

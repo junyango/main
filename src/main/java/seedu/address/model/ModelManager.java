@@ -2,10 +2,12 @@ package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
-import static seedu.address.commons.util.StringUtil.containsWordIgnoreCase;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -138,6 +140,37 @@ public class ModelManager extends ComponentManager implements Model {
         indicateAddressBookChanged();
     }
 
+    //@@author dennaloh
+    @Override
+    public synchronized String getGMapUrl(ReadOnlyPerson target) {
+        String gMapUrl = addressBook.getGMapUrl(target);
+        return gMapUrl;
+    }
+
+    @Override
+    public synchronized String getFbUrl (ReadOnlyPerson target) {
+        String fbUrl = addressBook.getFbUrl(target);
+        return fbUrl;
+    }
+
+    /**
+     * Opens the url in the default browser.
+     * @param url is the url that will be opened.
+     */
+    @Override
+    public void openUrl (String url) {
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            if (Desktop.isDesktopSupported()) {
+                URI urlToOpen = new URI(url);
+                desktop.browse(urlToOpen);
+            }
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+    //@@author
+
     //@@author yunpengn
     @Override
     public void setPersonAvatar(ReadOnlyPerson target, Avatar avatar) {
@@ -214,32 +247,9 @@ public class ModelManager extends ComponentManager implements Model {
         addressBook.removeEvent(event);
         indicateAddressBookChanged();
     }
-
-    //@@author
-
     //@@author
 
     //=========== Filtered Person List Accessors =============================================================
-
-    //@@author dennaloh
-    /**
-     * Iterates through person list and checks for duplicates
-     *
-     */
-    public boolean haveDuplicate (String name, ObservableList<ReadOnlyPerson> list) {
-        int count = 0;
-        Iterator<ReadOnlyPerson> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            ReadOnlyPerson person = iterator.next();
-            if (containsWordIgnoreCase(person.getName().getValue(), name)) {
-                count++;
-            }
-        }
-        if (count > 1) {
-            return true;
-        }
-        return false;
-    }
 
     /**
      * Returns an unmodifiable view of the list of {@code ReadOnlyPerson} backed by the internal list of

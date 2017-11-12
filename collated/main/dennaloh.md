@@ -58,6 +58,56 @@ public class EmailCommand extends Command {
     }
 }
 ```
+###### \java\seedu\address\logic\commands\person\FbCommand.java
+``` java
+/**
+ * Searches for your contact on Facebook
+ */
+public class FbCommand extends Command {
+
+    public static final String COMMAND_WORD = "facebook";
+    public static final String COMMAND_ALIAS = "fb";
+
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Searches for the person identified by the index "
+            + "number used in the last person listing on Facebook.\n"
+            + "Parameters: INDEX (must be a positive integer)\n"
+            + "Example: " + COMMAND_WORD + " 1 ";
+
+    public static final String MESSAGE_SUCCESS = "Opened Facebook to search for %1$s";
+
+    private final Index targetIndex;
+
+    /**
+     * @param targetIndex of the person in the filtered person list to search on Facebook for
+     */
+    public FbCommand (Index targetIndex) {
+        this.targetIndex = targetIndex;
+    }
+
+    @Override
+    public CommandResult execute() throws CommandException {
+        List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
+
+        if (targetIndex.getZeroBased() >= lastShownList.size()) {
+            throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        }
+
+        ReadOnlyPerson personToSearch = lastShownList.get(targetIndex.getZeroBased());
+
+        String fbUrl = model.getFbUrl(personToSearch);
+        model.openUrl(fbUrl);
+
+        return new CommandResult(String.format(MESSAGE_SUCCESS, personToSearch));
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other == this // short circuit if same object
+                || (other instanceof FbCommand // instanceof handles nulls
+                && this.targetIndex.equals(((FbCommand) other).targetIndex)); // state check
+    }
+}
+```
 ###### \java\seedu\address\logic\commands\person\FindTagCommand.java
 ``` java
 /**
@@ -94,6 +144,57 @@ public class FindTagCommand extends Command {
     }
 }
 ```
+###### \java\seedu\address\logic\commands\person\GMapCommand.java
+``` java
+/**
+ * Opens Google Maps in browser with address of person identified using it's last displayed index from the address book
+ * as the destination.
+ */
+public class GMapCommand extends Command {
+
+    public static final String COMMAND_WORD = "gmap";
+    public static final String COMMAND_ALIAS = "gm";
+
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Opens Google Maps in default browser with the address "
+            + "of the person identified by the index number used in the last person listing being the Destination.\n"
+            + "Parameters: INDEX (must be a positive integer)\n"
+            + "Example: " + COMMAND_WORD + " 1 ";
+
+    public static final String MESSAGE_SUCCESS = "Opened Google Maps to get to %1$s";
+
+    private final Index targetIndex;
+
+    /**
+     * @param targetIndex of the person in the filtered person list to get directions to
+     */
+    public GMapCommand (Index targetIndex) {
+        this.targetIndex = targetIndex;
+    }
+
+    @Override
+    public CommandResult execute() throws CommandException {
+        List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
+
+        if (targetIndex.getZeroBased() >= lastShownList.size()) {
+            throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        }
+
+        ReadOnlyPerson personToGetDirectionsTo = lastShownList.get(targetIndex.getZeroBased());
+
+        String gmapUrl = model.getGMapUrl(personToGetDirectionsTo);
+        model.openUrl(gmapUrl);
+
+        return new CommandResult(String.format(MESSAGE_SUCCESS, personToGetDirectionsTo));
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other == this // short circuit if same object
+                || (other instanceof GMapCommand // instanceof handles nulls
+                && this.targetIndex.equals(((GMapCommand) other).targetIndex)); // state check
+    }
+}
+```
 ###### \java\seedu\address\logic\parser\AddressBookParser.java
 ``` java
         case FindTagCommand.COMMAND_WORD:
@@ -103,6 +204,61 @@ public class FindTagCommand extends Command {
         case EmailCommand.COMMAND_WORD:
         case EmailCommand.COMMAND_ALIAS:
             return new EmailCommandParser().parse(arguments);
+
+        case GMapCommand.COMMAND_WORD:
+        case GMapCommand.COMMAND_ALIAS:
+            return new GMapCommandParser().parse(arguments);
+
+        case FbCommand.COMMAND_WORD:
+        case FbCommand.COMMAND_ALIAS:
+            return new FbCommandParser().parse(arguments);
+```
+###### \java\seedu\address\logic\parser\person\EmailCommandParser.java
+``` java
+/**
+ * Parses input arguments and creates a new EmailCommand object
+ */
+public class EmailCommandParser implements Parser<EmailCommand> {
+
+    /**
+     * Parses the given {@code String} of arguments in the context of the EmailCommand
+     * and returns an EmailCommand object for execution.
+     * @throws ParseException if the user input does not conform the expected format
+     */
+    public EmailCommand parse(String args) throws ParseException {
+        try {
+            Index index = ParserUtil.parseIndex(args);
+            return new EmailCommand(index);
+        } catch (IllegalValueException ive) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                    Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX));
+        }
+    }
+}
+```
+###### \java\seedu\address\logic\parser\person\FbCommandParser.java
+``` java
+/**
+ * Parses input arguments and creates a new FbCommand object
+ */
+public class FbCommandParser implements Parser<FbCommand> {
+
+    /**
+     * Parses the given {@code String} of arguments in the context of the FbCommand
+     * and returns an FbCommand object for execution.
+     * @throws ParseException if the user input does not conform the expected format
+     */
+    public FbCommand parse(String args) throws ParseException {
+
+        try {
+            Index index = ParserUtil.parseIndex(args);
+            return new FbCommand(index);
+        } catch (IllegalValueException ive) {
+            throw new ParseException(
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, FbCommand.MESSAGE_USAGE));
+        }
+    }
+}
 ```
 ###### \java\seedu\address\logic\parser\person\FindTagCommandParser.java
 ``` java
@@ -130,66 +286,107 @@ public class FindTagCommandParser implements Parser<FindTagCommand> {
 
 }
 ```
+###### \java\seedu\address\logic\parser\person\GMapCommandParser.java
+``` java
+/**
+ * Parses input arguments and creates a new GMapCommand object
+ */
+public class GMapCommandParser implements Parser<GMapCommand> {
+
+    /**
+     * Parses the given {@code String} of arguments in the context of the GMapCommand
+     * and returns an GMapCommand object for execution.
+     * @throws ParseException if the user input does not conform the expected format
+     */
+    public GMapCommand parse(String args) throws ParseException {
+
+        try {
+            Index index = ParserUtil.parseIndex(args);
+            return new GMapCommand(index);
+        } catch (IllegalValueException ive) {
+            throw new ParseException(
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, GMapCommand.MESSAGE_USAGE));
+        }
+    }
+}
+```
+###### \java\seedu\address\model\AddressBook.java
+``` java
+    /**
+     * Returns URL for google maps using the person's address
+     * @param key is target person
+     * @return URL
+     */
+    public String getGMapUrl (ReadOnlyPerson key) {
+
+        String address = key.getAddress().toString();
+        String replacedAddress = address.replaceAll(" ", "+");
+        StringBuilder sb = new StringBuilder();
+        sb.append("http://maps.google.com/maps?saddr=");
+        sb.append("&daddr=");
+        sb.append(replacedAddress);
+        String gMapUrl = sb.toString();
+
+        return gMapUrl;
+    }
+
+    /**
+     * Returns URL to search for person on facebook
+     * @param key is target person
+     * @return URL
+     */
+    public String getFbUrl (ReadOnlyPerson key) {
+        String name = key.getName().toString();
+        String replacedName = name.replaceAll(" ", "%20");
+        StringBuilder sb = new StringBuilder();
+        sb.append("https://www.facebook.com/search/top/?q=");
+        sb.append(replacedName);
+        String fbUrl = sb.toString();
+
+        return fbUrl;
+    }
+```
 ###### \java\seedu\address\model\Model.java
 ``` java
-    /** Iterates through person list and checks for duplicates */
-    boolean haveDuplicate (String name, ObservableList<ReadOnlyPerson> list);
+    /** Gets URL for google maps. */
+    String getGMapUrl(ReadOnlyPerson target);
 
-    /** Returns an unmodifiable view of the filtered person list */
-    ObservableList<ReadOnlyPerson> getFilteredPersonList();
+    /** Gets URL to search on facebook. */
+    String getFbUrl (ReadOnlyPerson target);
 
-    /** Returns an unmodifiable view of the filtered event list */
-    ObservableList<ReadOnlyEvent> getFilteredEventList();
-
-    /** Updates the filter of the filtered person list to filter by the given {@code predicate}. */
-    void updateFilteredPersonList(Predicate<ReadOnlyPerson> predicate);
-
-    /** Updates the filter of the filtered event list to filter by the given {@code predicate}. */
-    void updateFilteredEventsList(Predicate<ReadOnlyEvent> predicate);
-
-}
+    /** Opens URL in default browser. */
+    void openUrl (String url);
 ```
 ###### \java\seedu\address\model\ModelManager.java
 ``` java
+    @Override
+    public synchronized String getGMapUrl(ReadOnlyPerson target) {
+        String gMapUrl = addressBook.getGMapUrl(target);
+        return gMapUrl;
+    }
+
+    @Override
+    public synchronized String getFbUrl (ReadOnlyPerson target) {
+        String fbUrl = addressBook.getFbUrl(target);
+        return fbUrl;
+    }
+
     /**
-     * Iterates through person list and checks for duplicates
-     *
+     * Opens the url in the default browser.
+     * @param url is the url that will be opened.
      */
-    public boolean haveDuplicate (String name, ObservableList<ReadOnlyPerson> list) {
-        int count = 0;
-        Iterator<ReadOnlyPerson> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            ReadOnlyPerson person = iterator.next();
-            if (containsWordIgnoreCase(person.getName().getValue(), name)) {
-                count++;
+    @Override
+    public void openUrl (String url) {
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            if (Desktop.isDesktopSupported()) {
+                URI urlToOpen = new URI(url);
+                desktop.browse(urlToOpen);
             }
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
         }
-        if (count > 1) {
-            return true;
-        }
-        return false;
     }
-
-    /**
-     * Returns an unmodifiable view of the list of {@code ReadOnlyPerson} backed by the internal list of
-     * {@code addressBook}
-     */
-    @Override
-    public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
-        return FXCollections.unmodifiableObservableList(filteredPersons);
-    }
-
-    /**
-     * Updates the filter of the filtered person list to filter by the given {@code predicate}.
-     *
-     * @throws NullPointerException if {@code predicate} is null.
-     */
-    @Override
-    public void updateFilteredPersonList(Predicate<ReadOnlyPerson> predicate) {
-        requireNonNull(predicate);
-        filteredPersons.setPredicate(predicate);
-    }
-
 ```
 ###### \java\seedu\address\model\person\Person.java
 ``` java
@@ -216,43 +413,6 @@ public class FindTagCommandParser implements Parser<FindTagCommand> {
     public void sortPersons() {
         internalList.sort((e1, e2) -> e1.getName().toString().compareToIgnoreCase(e2.getName().toString()));
     }
-
-    /**
-     * Replaces the person {@code target} in the list with {@code editedPerson}.
-     *
-     * @throws DuplicatePersonException if the replacement is equivalent to another existing person in the list.
-     * @throws PersonNotFoundException if {@code target} could not be found in the list.
-     */
-    public void setPerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
-            throws DuplicatePersonException, PersonNotFoundException {
-        requireNonNull(editedPerson);
-
-        int index = internalList.indexOf(target);
-        if (index == -1) {
-            throw new PersonNotFoundException();
-        }
-
-        if (!target.equals(editedPerson) && internalList.contains(editedPerson)) {
-            throw new DuplicatePersonException();
-        }
-
-        internalList.set(index, new Person(editedPerson));
-    }
-
-    /**
-     * Removes the equivalent person from the list.
-     *
-     * @throws PersonNotFoundException if no such person could be found in the list.
-     */
-    public boolean remove(ReadOnlyPerson toRemove) throws PersonNotFoundException {
-        requireNonNull(toRemove);
-        final boolean personFoundAndDeleted = internalList.remove(toRemove);
-        if (!personFoundAndDeleted) {
-            throw new PersonNotFoundException();
-        }
-        return personFoundAndDeleted;
-    }
-
 ```
 ###### \java\seedu\address\model\property\TagContainsKeywordsPredicate.java
 ``` java

@@ -200,6 +200,42 @@ public class AddressBook implements ReadOnlyAddressBook {
         }
     }
 
+    //@@author dennaloh
+    /**
+     * Returns URL for google maps using the person's address
+     * @param key is target person
+     * @return URL
+     */
+    public String getGMapUrl (ReadOnlyPerson key) {
+
+        String address = key.getAddress().toString();
+        String replacedAddress = address.replaceAll(" ", "+");
+        StringBuilder sb = new StringBuilder();
+        sb.append("http://maps.google.com/maps?saddr=");
+        sb.append("&daddr=");
+        sb.append(replacedAddress);
+        String gMapUrl = sb.toString();
+
+        return gMapUrl;
+    }
+
+    /**
+     * Returns URL to search for person on facebook
+     * @param key is target person
+     * @return URL
+     */
+    public String getFbUrl (ReadOnlyPerson key) {
+        String name = key.getName().toString();
+        String replacedName = name.replaceAll(" ", "%20");
+        StringBuilder sb = new StringBuilder();
+        sb.append("https://www.facebook.com/search/top/?q=");
+        sb.append(replacedName);
+        String fbUrl = sb.toString();
+
+        return fbUrl;
+    }
+    //@@author
+
     /**
      * Sorts the persons according to their name.
      */

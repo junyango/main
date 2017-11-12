@@ -1,10 +1,10 @@
-package seedu.address.storage;
+package seedu.address.storage.elements;
 
 import javax.xml.bind.annotation.XmlElement;
 
 import seedu.address.model.reminder.ReadOnlyReminder;
 
-
+//@@author junyango
 /**
  * JAXB-friendly version of the Reminder.
  */
